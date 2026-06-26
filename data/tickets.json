@@ -1,0 +1,54 @@
+{
+  "tickets": [
+    {
+      "id": "08ada828-c37e-4578-b7b8-e7554b384e22",
+      "reporter_name": "Critical User",
+      "source_type": "Portal",
+      "incident_date": "2026-06-26",
+      "description": "The system down affected all users in production",
+      "attachment_filename": null,
+      "priority": "Critical",
+      "created_at": "2026-06-26T07:37:33.501880Z"
+    },
+    {
+      "id": "5c303ad9-c906-47df-9a24-fb0acb68656c",
+      "reporter_name": "Security Analyst",
+      "source_type": "Email",
+      "incident_date": "2026-06-26",
+      "description": "We have a security down on the main firewall",
+      "attachment_filename": null,
+      "priority": "Critical",
+      "created_at": "2026-06-26T07:37:35.922490Z"
+    },
+    {
+      "id": "48f38025-f753-4451-9744-9e2de0266e0c",
+      "reporter_name": "API Monitor",
+      "source_type": "PDF Upload",
+      "incident_date": "2026-06-26",
+      "description": "Users see error 500 on the login page repeatedly",
+      "attachment_filename": null,
+      "priority": "Critical",
+      "created_at": "2026-06-26T07:37:38.352377Z"
+    },
+    {
+      "id": "11fe802c-0129-4e87-b0c7-6e7b0bf34ce1",
+      "reporter_name": "Low Priority Reporter",
+      "source_type": "Email",
+      "incident_date": "2026-06-26",
+      "description": "Minor UI glitch on the settings page today",
+      "attachment_filename": null,
+      "priority": "Low",
+      "created_at": "2026-06-26T07:37:40.148451Z"
+    },
+    {
+      "id": "4e9c7aa5-e849-4560-8f05-bdaffa856f91",
+      "reporter_name": "Lovepreet",
+      "source_type": "Email",
+      "incident_date": "2026-06-26",
+      "description": " critical failures in backend",
+      "attachment_filename": "FORM16 MAR 2026.pdf",
+      "priority": "Critical",
+      "created_at": "2026-06-26T10:40:53.405610Z"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+node_modules
+frontend/node_modules
+playwright/node_modules
+__pycache__
+*.pyc
+*.pyo
+.env
+.git
+.gitignore
+*.md
+frontend/dist
+playwright/playwright-report
+playwright/test-results
+playwright/blob-report

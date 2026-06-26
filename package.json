@@ -1,0 +1,13 @@
+{
+  "name": "incident-reporting-system",
+  "private": true,
+  "scripts": {
+    "start": "npm run dev --prefix frontend",
+    "api": "cd backend && python app.py",
+    "dev": "concurrently \"npm run start\" \"npm run api\"",
+    "test:e2e": "npm test --prefix playwright"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
