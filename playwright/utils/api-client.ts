@@ -13,6 +13,7 @@ export interface CreateTicketPayload {
 export interface TicketResponse extends CreateTicketPayload {
   id: string;
   priority: 'Critical' | 'Low';
+  status?: string;
   created_at: string;
   attachment_filename: string | null;
 }
@@ -59,4 +60,62 @@ export async function createTicketRaw(
   payload: Partial<CreateTicketPayload>,
 ) {
   return request.post(`${API_BASE_URL}/tickets`, { data: payload });
+}
+
+/**
+ * Update a ticket via the Flask API directly.
+ */
+export async function updateTicket(
+  request: APIRequestContext,
+  ticketId: string,
+  payload: Partial<CreateTicketPayload & { status: string }>,
+): Promise<TicketResponse> {
+  const response = await request.put(`${API_BASE_URL}/tickets/${ticketId}`, {
+    data: payload,
+  });
+
+  if (!response.ok()) {
+    throw new Error(
+      `updateTicket failed: ${response.status()} ${await response.text()}`,
+    );
+  }
+
+  return response.json() as Promise<TicketResponse>;
+}
+
+/**
+ * Delete a ticket via the Flask API directly.
+ */
+export async function deleteTicket(
+  request: APIRequestContext,
+  ticketId: string,
+): Promise<void> {
+  const response = await request.delete(`${API_BASE_URL}/tickets/${ticketId}`);
+
+  if (!response.ok()) {
+    throw new Error(
+      `deleteTicket failed: ${response.status()} ${await response.text()}`,
+    );
+  }
+}
+
+/**
+ * Update a ticket and return the raw HTTP response (for status/body assertions).
+ */
+export async function updateTicketRaw(
+  request: APIRequestContext,
+  ticketId: string,
+  payload: Partial<CreateTicketPayload & { status: string }>,
+) {
+  return request.put(`${API_BASE_URL}/tickets/${ticketId}`, { data: payload });
+}
+
+/**
+ * Delete a ticket and return the raw HTTP response (for status/body assertions).
+ */
+export async function deleteTicketRaw(
+  request: APIRequestContext,
+  ticketId: string,
+) {
+  return request.delete(`${API_BASE_URL}/tickets/${ticketId}`);
 }

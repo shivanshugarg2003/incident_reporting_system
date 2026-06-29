@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import axios from 'axios'
+import { useRef, useState } from 'react'
 import { Calendar } from 'lucide-react'
+import { createTicket } from '../api'
+import { useNotifications } from '../context/NotificationContext'
 
 const EMPTY_FORM_DATA = {
   reporterName: '',
@@ -39,9 +40,10 @@ const FILE_UPLOAD_CONFIG = {
 const SOURCE_TYPE_OPTIONS = ['Email', 'Portal', 'PDF Upload']
 
 const inputClassName =
-  'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600'
+  'w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400'
 
-const labelClassName = 'mb-1 block text-sm font-normal text-gray-600'
+const labelClassName =
+  'mb-1 block text-sm font-normal text-gray-600 dark:text-slate-300'
 
 /**
  * Incident report submission form with field validation and API integration.
@@ -50,6 +52,8 @@ const labelClassName = 'mb-1 block text-sm font-normal text-gray-600'
  */
 function IncidentForm() {
   const today = new Date().toISOString().split('T')[0]
+  const { addNotification } = useNotifications()
+  const submitLockRef = useRef(false)
 
   const [formData, setFormData] = useState(EMPTY_FORM_DATA)
   const [errors, setErrors] = useState(EMPTY_ERRORS)
@@ -148,22 +152,26 @@ function IncidentForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (submitLockRef.current) return
+
     setSubmitStatus(null)
     setSubmitError('')
 
     if (!validateAll()) return
 
+    submitLockRef.current = true
     setIsSubmitting(true)
 
     try {
-      await axios.post('/tickets', {
-        reporter_name: formData.reporterName,
+      const ticket = await createTicket({
+        reporter_name: formData.reporterName.trim(),
         source_type: formData.sourceType,
         incident_date: formData.incidentDate,
-        description: formData.description,
+        description: formData.description.trim(),
         attachment_filename: formData.attachmentFilename || null,
       })
 
+      addNotification(ticket)
       setSubmitStatus('success')
       setFormData(EMPTY_FORM_DATA)
       setErrors(EMPTY_ERRORS)
@@ -178,14 +186,19 @@ function IncidentForm() {
       )
     } finally {
       setIsSubmitting(false)
+      submitLockRef.current = false
     }
   }
 
   return (
     <div className="mx-auto max-w-lg px-4 py-10">
-      <div className="rounded-lg border border-gray-200 bg-white px-8 py-8">
+      <div
+        data-testid="incident-form-card"
+        className="rounded-lg border border-gray-200 bg-white px-8 py-8 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+      >
         {submitStatus === 'success' && (
           <div
+            data-testid="success-banner"
             className="mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-800"
             role="status"
           >
@@ -203,10 +216,10 @@ function IncidentForm() {
         )}
 
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100">
             Incident Report Form
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
             To report an incident please fill out the form below to submit your
             request.
           </p>
@@ -219,18 +232,21 @@ function IncidentForm() {
             </label>
             <input
               id="reporterName"
+              data-testid="reporter-name"
               type="text"
               required
               minLength={2}
               maxLength={100}
-              placeholder="Shivanshu Garg"
+              placeholder="Jane Smith"
               value={formData.reporterName}
               onChange={(e) => handleChange('reporterName', e.target.value)}
               onBlur={() => handleBlur('reporterName')}
               className={inputClassName}
             />
             {errors.reporterName && (
-              <p className="mt-1 text-sm text-red-600">{errors.reporterName}</p>
+              <p data-testid="reporter-name-error" className="mt-1 text-sm text-red-600">
+                {errors.reporterName}
+              </p>
             )}
           </div>
 
@@ -246,11 +262,12 @@ function IncidentForm() {
               {SOURCE_TYPE_OPTIONS.map((option) => (
                 <label
                   key={option}
-                  className="flex cursor-pointer items-center gap-2 text-sm text-gray-700"
+                  className="flex cursor-pointer items-center gap-2 text-sm text-gray-700 dark:text-slate-200"
                 >
                   <input
                     type="radio"
                     name="sourceType"
+                    data-testid={`source-type-${option.toLowerCase().replace(/\s+/g, '-')}`}
                     value={option}
                     checked={formData.sourceType === option}
                     onChange={(e) => handleChange('sourceType', e.target.value)}
@@ -274,6 +291,7 @@ function IncidentForm() {
               <input
                 key={fileInputKey}
                 id="attachment"
+                data-testid="attachment-input"
                 type="file"
                 accept={fileConfig.accept}
                 onChange={handleFileChange}
@@ -297,6 +315,7 @@ function IncidentForm() {
             <div className="relative">
               <input
                 id="incidentDate"
+                data-testid="incident-date"
                 type="date"
                 required
                 max={today}
@@ -311,7 +330,9 @@ function IncidentForm() {
               />
             </div>
             {errors.incidentDate && (
-              <p className="mt-1 text-sm text-red-600">{errors.incidentDate}</p>
+              <p data-testid="incident-date-error" className="mt-1 text-sm text-red-600">
+                {errors.incidentDate}
+              </p>
             )}
           </div>
 
@@ -321,6 +342,7 @@ function IncidentForm() {
             </label>
             <textarea
               id="description"
+              data-testid="description"
               required
               minLength={10}
               maxLength={2000}
@@ -330,16 +352,19 @@ function IncidentForm() {
               onBlur={() => handleBlur('description')}
               className={inputClassName}
             />
-            <p className="mt-1 text-right text-sm text-gray-500">
+            <p data-testid="char-counter" className="mt-1 text-right text-sm text-gray-500">
               {charCount} / 2000
             </p>
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+              <p data-testid="description-error" className="mt-1 text-sm text-red-600">
+                {errors.description}
+              </p>
             )}
           </div>
 
           <button
             type="submit"
+            data-testid="submit-button"
             disabled={isSubmitDisabled}
             className="flex w-full items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2.5 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400"
           >

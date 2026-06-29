@@ -162,4 +162,75 @@ test.describe('Incident Form', () => {
       submitPage.fieldError('Date cannot be in the future'),
     ).toBeVisible();
   });
+
+  test('shows validation error when description is empty on blur', async ({
+    submitPage,
+  }) => {
+    await submitPage.descriptionTextarea.focus();
+    await submitPage.blurDescription();
+    await expect(
+      submitPage.fieldError('Description is required'),
+    ).toBeVisible();
+  });
+
+  test('accepts special characters in description', async ({
+    submitPage,
+    page,
+  }) => {
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/tickets') &&
+        response.request().method() === 'POST',
+    );
+
+    await submitPage.fillForm({
+      ...lowPriorityTicket,
+      description: 'Special chars: @#$%^&*()_+ test case here',
+    });
+    await submitPage.submit();
+
+    expect((await responsePromise).status()).toBe(201);
+    await expect(submitPage.successBanner).toBeVisible();
+  });
+
+  test('accepts very long description up to limit', async ({
+    submitPage,
+    page,
+  }) => {
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/tickets') &&
+        response.request().method() === 'POST',
+    );
+
+    const longDescription = `${'A'.repeat(1990)} validation`;
+    await submitPage.fillForm({
+      ...lowPriorityTicket,
+      description: longDescription,
+    });
+    await submitPage.submit();
+
+    expect((await responsePromise).status()).toBe(201);
+    await expect(submitPage.successBanner).toBeVisible();
+  });
+
+  test('prevents duplicate submission on rapid clicks', async ({
+    submitPage,
+    page,
+  }) => {
+    let postCount = 0;
+    await page.route('**/tickets', async (route) => {
+      if (route.request().method() === 'POST') {
+        postCount += 1;
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+      await route.continue();
+    });
+
+    await submitPage.fillForm(lowPriorityTicket);
+    await submitPage.submitButton.dblclick();
+
+    await expect(submitPage.successBanner).toBeVisible();
+    expect(postCount).toBe(1);
+  });
 });

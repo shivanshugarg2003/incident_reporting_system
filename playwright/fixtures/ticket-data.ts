@@ -9,7 +9,7 @@ export interface TicketFormData {
 }
 
 export const lowPriorityTicket: TicketFormData = {
-  reporterName: 'Jane Tester',
+  reporterName: 'Jane Smith',
   sourceType: 'Email',
   incidentDate: today(),
   description: 'Minor UI glitch on the settings page today',

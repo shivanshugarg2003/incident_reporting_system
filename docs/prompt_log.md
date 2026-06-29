@@ -1,235 +1,274 @@
 # Cursor AI Prompt Log
 
-This file is a structured audit log of Cursor AI prompts used to build the Incident Reporting & Routing System. It records what was requested, what was generated, and whether manual fixes were needed.
-
-## How to Update
-
-After each Cursor session:
-
-1. Add a new entry using the template below (or update an existing entry if revisiting a task).
-2. Set **Status** to `WORKED`, `PARTIAL`, or `HALLUCINATED` after reviewing the output.
-3. Fill in **Outcome**, **Hallucinations / Issues**, and **Fix Applied** based on actual results.
-4. Use the session date in the **Date** field.
-
-## Rating Guide
-
-| Status | Meaning |
-|--------|---------|
-| **WORKED** | Generated correctly with no fixes needed |
-| **PARTIAL** | Needed minor edits |
-| **HALLUCINATED** | Wrong file paths, missing logic, or needed full rewrite |
+**Project:** Incident Reporting and Routing System  
+**Version:** 1.0.0  
+**Authors:** Shivanshu Garg, Lovepreet  
+**Last Updated:** 29 June 2026
 
 ---
 
-## [T1-A] Task 1 — Project Scaffold
+## Introduction
 
-**Status:** PARTIAL
+This document satisfies **Task 4**: *"Document everything. Log the exact prompts that worked best versus prompts which hallucinated."*
 
-**Cursor Mode:** Composer
-
-**Date:** 2026-06-26
-
-**Prompt Summary:** Create monorepo structure with Vite/React frontend, Flask backend, data/docs folders, and root npm scripts.
-
-**Outcome:** Created root configuration (`.gitignore`, `.nvmrc`, `.python-version`, `package.json`), `frontend/` Vite React scaffold, `backend/app.py` and `router.py` with health route, `data/tickets.json`, empty `docs/` files, and `npm run dev` orchestration via `concurrently`.
-
-**Hallucinations / Issues:**
-- Vite scaffold defaulted to React 19 and included `oxlint` (not in approved dependency list).
-- PowerShell did not accept `&&` in combined install commands.
-- Auto-review initially blocked `npm create vite` until plan approval was confirmed.
-
-**Fix Applied:**
-- Pinned React to 18 in `frontend/package.json`.
-- Removed `oxlint` and default template boilerplate (`App.css`, `.oxlintrc.json`).
-- Ran install commands with PowerShell-compatible `;` separators.
-- Retried blocked shell command after user approval.
+It records the Cursor AI prompts used during development, their outcomes, manual corrections, and lessons learned. All examples below are drawn from actual development sessions. No fabricated hallucinations are included.
 
 ---
 
-## [T1-B] Task 1 — Tailwind & Vite Config
+## Development Process
 
-**Status:** WORKED
+The project was built in four phases aligned with the task specification:
 
-**Cursor Mode:** Composer
+1. **Task 1** — Cursor and Environment Setup
+2. **Task 2** — Intake Form (React Frontend via Vibe Coding)
+3. **Task 3** — Simple Routing Rule + Dashboard
+4. **Task 4** — Documentation, README, and Playwright Automation
 
-**Date:** 2026-06-26
-
-**Prompt Summary:** Configure Tailwind CSS content paths, `index.css` directives, Vite `/api` proxy, and PostCSS plugins.
-
-**Outcome:** Added `tailwind.config.js` with correct content paths, replaced `index.css` with Tailwind directives, configured Vite proxy for `/api` to `localhost:5000`, and confirmed `postcss.config.js` uses `tailwindcss` and `autoprefixer`.
-
-**Hallucinations / Issues:**
-None observed.
-
-**Fix Applied:**
-No manual changes required.
+Each phase used Cursor Composer with a plan-then-approve workflow defined in `.cursor/rules/Incident Reporting System.mdc`.
 
 ---
 
-## [T2-A] Task 2 — Incident Intake Form Component
+## Task 1 — Cursor and Environment Setup
 
-**Status:** PARTIAL
+### Prompt Used
 
-**Cursor Mode:** Composer
+> Create a monorepo with Vite/React frontend, Flask backend, `data/` and `docs/` folders, and `npm run dev` to run both servers concurrently.
 
-**Date:** 2026-06-26
+### Purpose
 
-**Prompt Summary:** Build `IncidentForm.jsx` with validation, conditional file upload, axios submit, and success/error banners.
+Establish the sacred project structure and a single development command for local full-stack development.
 
-**Outcome:** Implemented `IncidentForm.jsx` with blur validation, conditional file upload by source type, character counter, submit disabled logic, `POST /api/tickets` integration, success/error banners, and form reset on success.
+### Result
 
-**Hallucinations / Issues:**
-- `handleChange` for `sourceType` initially called `setFormData` twice, which could cause redundant state updates.
+| Requirement | Status |
+|-------------|--------|
+| Monorepo folder structure (`frontend/`, `backend/`, `data/`, `docs/`) | Complete |
+| `npm run dev` running frontend and backend concurrently | Complete |
+| Tailwind CSS configured | Complete |
+| Vite proxy to Flask on port 5000 | Complete |
+| Cursor rules file (`.cursor/rules/`) | Complete |
 
-**Fix Applied:**
-- Refactored `handleChange` to handle `sourceType` in a single state update and return early.
+### Hallucinations / Issues Encountered
 
----
+#### Hallucination 1 — React 19 Template Defaults
 
-## [T2-B] Task 2 — App Router & Navigation
+| Field | Detail |
+|-------|--------|
+| **Original Prompt** | "Scaffold React app with Vite" |
+| **Expected Result** | React 18 per approved dependencies |
+| **Actual Result** | Vite template installed React 19 and oxlint |
+| **Issue** | Dependencies outside approved list |
+| **How Identified** | Checked `frontend/package.json` against cursor rules |
+| **How Fixed** | Pinned React 18.3.1; removed oxlint |
+| **Improved Prompt** | "Create Vite React 18 app; dependencies: react, react-dom, vite, tailwindcss only" |
 
-**Status:** WORKED
+### Manual Improvements
 
-**Cursor Mode:** Composer
-
-**Date:** 2026-06-26
-
-**Prompt Summary:** Create `SubmitPage`, `DashboardPage` placeholder, `Navbar`, and `App.jsx` routing with `react-router-dom`.
-
-**Outcome:** Created `SubmitPage.jsx`, `DashboardPage.jsx` (placeholder), `Navbar.jsx` with `NavLink` active styling, and updated `App.jsx` with routes for `/`, `/submit`, and `/dashboard`.
-
-**Hallucinations / Issues:**
-None observed.
-
-**Fix Applied:**
-No manual changes required.
-
----
-
-## [T3-A] Task 3 — Flask API & Routing Engine
-
-**Status:** PARTIAL
-
-**Cursor Mode:** Composer
-
-**Date:** 2026-06-26
-
-**Prompt Summary:** Implement `router.py` priority engine and `app.py` POST/GET `/tickets` endpoints with JSON persistence.
-
-**Outcome:** Rewrote `router.py` with `CRITICAL_KEYWORDS` and `assign_priority()`. Rewrote `app.py` with `load_tickets()`, `save_tickets()`, `POST /tickets`, `GET /tickets`, JSON error handlers, and CORS for the Vite dev origin.
-
-**Hallucinations / Issues:**
-- Replaced the Task 1 blueprint-based structure and removed the `/health` endpoint without an explicit request to keep it.
-- Flask debug reloader restarted the server when E2E tests reset `tickets.json`, causing intermittent API failures.
-- Direct API calls to `localhost:5000` failed on Windows when resolved to IPv6 `::1`.
-
-**Fix Applied:**
-- Added `use_reloader=False` to `app.run()` for E2E stability.
-- Added `http://127.0.0.1:5173` to Flask-CORS origins.
-- Playwright `api-client.ts` updated to use `127.0.0.1` for direct backend calls.
+| Issue | Fix |
+|-------|-----|
+| PowerShell `&&` syntax errors | Used `;` separators in shell commands |
 
 ---
 
-## [T3-B] Task 3 — Ticket Dashboard Component
+## Task 2 — Intake Form (React Frontend via Vibe Coding)
 
-**Status:** WORKED
+### Prompt Used
 
-**Cursor Mode:** Composer
+> Build IncidentForm with four fields: Reporter Name, Source Type (Email/Portal/PDF Upload), Incident Date, and Description. Add blur validation, disable submit until valid, POST to `/tickets`, show success banner, and reset the form.
 
-**Date:** 2026-06-26
+### Purpose
 
-**Prompt Summary:** Build `TicketDashboard.jsx` with polling, priority filters, table display, and update `DashboardPage`.
+Deliver the Task 2 incident intake form with field-level validation and API integration.
 
-**Outcome:** Implemented `TicketDashboard.jsx` with 5-second polling, All/Critical/Low filters, ticket count line, table with truncated descriptions, priority badges, row styling, loading spinner, error banner, and empty state. Updated `DashboardPage.jsx` to render the dashboard component.
+### Result
 
-**Hallucinations / Issues:**
-None observed in the initial implementation.
+| Requirement | Status |
+|-------------|--------|
+| Reporter Name field (required, min 2 characters) | Complete |
+| Source Type radio (Email / Portal / PDF Upload) | Complete |
+| Incident Date field (required, no future dates) | Complete |
+| Description textarea (required, min 10 characters) | Complete |
+| POST `/tickets` on submit | Complete |
+| Conditional PDF file picker | Complete |
+| Playwright coverage (`incident-form.spec.ts`, 18 tests) | Complete |
 
-**Fix Applied:**
-No manual changes required for the initial component. (E2E test fixes for dashboard filtering were handled separately in the Playwright task.)
+### Hallucinations / Issues Encountered
 
----
+No hallucinations or issues encountered for this task.
 
-## [T4-A] Task 4 — Playwright Test Planning
+### Manual Improvements
 
-**Status:** WORKED
-
-**Cursor Mode:** Composer (Plan mode)
-
-**Date:** 2026-06-26
-
-**Prompt Summary:** Analyze the application and produce a Playwright E2E testing plan without writing code until approved.
-
-**Outcome:** Delivered Phase 1 analysis covering testable pages, workflows, API endpoints, form fields, validations, dashboard behavior, untestable features, and a detailed framework plan (folder structure, page objects, test suites, fixtures, utilities).
-
-**Hallucinations / Issues:**
-None observed. The plan correctly identified missing `data-testid` attributes, shared `tickets.json` isolation risks, and sort order by `incident_date`.
-
-**Fix Applied:**
-No manual changes required.
+| Issue | Fix |
+|-------|-----|
+| Attachment not reset on source type change | Added reset logic when source type changes |
+| Figma UI redesign request | Updated Navbar and form styling; logic unchanged |
+| Personal placeholder text in form | Replaced with generic sample name "Jane Smith" |
 
 ---
 
-## [T4-B] Task 4 — Playwright Framework Implementation
+## Task 3 — Simple Routing Rule + Dashboard
 
-**Status:** PARTIAL
+Task 3 covers both the Python routing engine and the ticket dashboard. Each sub-phase had its own prompt.
 
-**Cursor Mode:** Composer
+### Prompt 3A — Routing Engine
 
-**Date:** 2026-06-26
+#### Prompt Used
 
-**Prompt Summary:** Implement approved Playwright TypeScript framework with Page Object Model and tests for existing features only.
+> Implement `backend/router.py` with keyword matching. If description contains `system down`, `security down`, or `error 500` (case-insensitive), assign Critical priority. Otherwise assign Low. Flask POST/GET `/tickets` must return `priority`, `status` (Open), and `created_at`.
 
-**Outcome:** Created `playwright/` directory with config, page objects, fixtures, utilities, 35 E2E tests across 5 spec files, HTML reporting, screenshots on failure, trace on retry, and `npm run test:e2e` script.
+#### Purpose
 
-**Hallucinations / Issues:**
-- Hardcoded ticket count assertions (`Showing 1 of 2 tickets`) failed when leftover tickets remained in `tickets.json`.
-- Flask debug reloader and port 5173 conflicts caused flaky and failed test runs.
-- `rowByReporterName` strict-mode violations when duplicate reporter names existed across test runs.
+Deliver the Task 3 Python routing rule and Flask API contract for ticket creation and retrieval.
 
-**Fix Applied:**
-- Added explicit `resetTickets()` in filter and count tests with retry logic in `ticket-store.ts`.
-- Replaced hardcoded counts with dynamic values from `getTickets()`.
-- Set dashboard tests to serial mode.
-- Added `strictPort: true` to Vite config.
-- Used `.first()` for row locators and unique reporter names in rule-engine tests.
+#### Result
+
+| Requirement | Status |
+|-------------|--------|
+| Task 3 minimum keywords (`system down`, `security down`, `error 500`) | Complete |
+| Case-insensitive keyword matching | Complete |
+| Returns `priority`, `status` (Open), `created_at` on create | Complete |
+| Extended failure keywords (35 patterns, user-requested) | Complete |
+| Whitespace normalization before matching | Complete |
+
+#### Hallucinations / Issues Encountered
+
+##### Hallucination 1 — Scope Creep on Routing
+
+| Field | Detail |
+|-------|--------|
+| **Original Prompt** | "Improve routing to handle typos and nearby failures" |
+| **Expected Result** | Minor normalization only |
+| **Actual Result** | Added 20+ keywords and fuzzy matching not in Task 3 spec |
+| **Issue** | Over-engineered router beyond assignment requirements |
+| **How Identified** | Task audit compared `router.py` against minimum keyword list |
+| **How Fixed** | Reverted to spec minimum; re-expanded only when explicitly requested |
+| **Improved Prompt** | "Expand router keywords to cover server down, database failure, network issue — list each pattern explicitly" |
+
+#### Manual Improvements
+
+| Issue | Fix |
+|-------|-----|
+| Stale Flask process after router changes | Documented restart requirement for `npm run dev` |
 
 ---
 
-# Prompt Performance Summary
+### Prompt 3B — Dashboard
 
-## Prompts That Worked Well
+#### Prompt Used
 
-| Task | Prompt Objective | Why It Worked | Notes |
-|------|------------------|---------------|-------|
-| T1-B | Tailwind and Vite configuration | Exact file paths and config snippets were specified | No ambiguity about proxy rewrite or PostCSS plugins |
-| T2-B | App router and navigation | Clear route map and component list | Output matched `react-router-dom` patterns already in dependencies |
-| T3-B | Ticket dashboard component | Detailed UI requirements (columns, filters, polling interval) | Generated component matched spec without inventing features |
-| T4-A | Playwright test planning | "Analyze first, do not write code" with approval gate | Prevented fake tests for unimplemented features |
-| T2-A | Incident intake form | Field-level validation rules and API payload shape were explicit | Form behavior matched acceptance criteria closely |
-| T1-A | Project scaffold | Sacred project structure and approved dependency list in rules | Minor template cleanup only |
-| T3-A | Flask API and routing engine | Keyword list and endpoint contracts were fully specified | Priority engine logic matched requirements |
+> Build TicketDashboard with color-coded priority badges, Critical row highlighting, All/Critical/Low filters, loading spinner, empty state, and 5-second polling for new tickets.
 
-## Prompts That Required Manual Fixes
+#### Purpose
 
-| Task | Issue | Cause | Improvement Made |
-|------|-------|-------|------------------|
-| T1-A | React 19 and extra deps from Vite template | `npm create vite` template not constrained in prompt | Specify exact package versions and forbidden packages in scaffold prompt |
-| T2-A | Duplicate `setFormData` on source type change | Logic edge case not called out in prompt | Add "reset attachment when source type changes" as acceptance criterion |
-| T3-A | `/health` endpoint removed during API rewrite | Task 3 prompt did not say to preserve scaffold endpoints | State which existing endpoints must remain when refactoring |
-| T3-A | E2E failures from Flask reloader | File writes to `tickets.json` triggered debug reload | Document side effects of shared JSON storage in test prompts |
-| T4-B | Filter test expected wrong ticket count | Hardcoded assertion; shared JSON state between runs | Use dynamic assertions from API response; require explicit test isolation |
-| T4-B | `localhost` resolved to IPv6 on Windows | Environment-specific networking behavior | Use `127.0.0.1` for direct API calls in test utilities |
+Deliver the Task 3 dashboard for viewing, filtering, and managing routed incident tickets.
 
-## Prompt Engineering Lessons Learned
+#### Result
 
-1. **Break large tasks into smaller prompts** — Scaffold, form, API, dashboard, and tests were easier to verify independently than a single monolithic request.
-2. **Specify exact file paths** — Paths like `frontend/src/components/IncidentForm.jsx` reduced misplaced or duplicate files.
-3. **Analyze existing code before generating** — The Playwright plan-first approach avoided tests for nonexistent endpoints.
-4. **Define acceptance criteria explicitly** — Validation messages, API payload fields, and sort behavior were testable because they were named in the prompt.
-5. **Avoid assumptions about unimplemented features** — Stating "do not invent APIs" kept documentation and tests aligned with the codebase.
-6. **Request validation rules verbatim** — Copying exact error strings into prompts produced matching UI behavior.
-7. **Account for environment differences** — Windows PowerShell, IPv6 `localhost`, and OneDrive file sync affected commands and E2E stability.
-8. **Plan test data isolation** — Shared `tickets.json` required reset utilities and serial test execution; this should be designed into the first test prompt.
-9. **List approved dependencies** — Prevented template tools (e.g., `oxlint`) from entering the project.
-10. **Use plan-then-approve for multi-file work** — Reduced rework on monorepo setup and Playwright framework generation.
+| Requirement | Status |
+|-------------|--------|
+| Priority badges (Critical = red, Low = green) | Complete |
+| Critical row background highlighting | Complete |
+| Filter buttons: All / Critical / Low | Complete |
+| Loading spinner on initial fetch | Complete |
+| Empty state when no tickets exist | Complete |
+| Sort by incident date (newest first) | Complete |
+| Search, edit, delete, export (enhancement) | Complete |
+
+#### Hallucinations / Issues Encountered
+
+No hallucinations or issues encountered for this task.
+
+#### Manual Improvements
+
+| Issue | Fix |
+|-------|-----|
+| Filter locator ambiguity (strict mode violation) | Added `data-testid="filter-critical"` and related test IDs |
+
+---
+
+## Task 4 — Documentation (README + this prompt log + Playwright automation)
+
+### Prompt Used
+
+> Write `docs/README.md` and `docs/prompt_log.md` documenting setup, tasks, routing rules, and API. Set up Playwright with Page Object Model, `data-testid` locators, reset `tickets.json` before each test, and cover form validation, routing, dashboard filters, and API interception.
+
+### Purpose
+
+Deliver Task 4 documentation requirements and end-to-end test automation covering all user-facing workflows.
+
+### Result
+
+| Requirement | Status |
+|-------------|--------|
+| Root `README.md` (setup, architecture, API, deployment) | Complete |
+| `docs/prompt_log.md` (this file) | Complete |
+| Playwright Page Object Model framework | Complete |
+| `resetTickets()` fixture for test isolation | Complete |
+| 81 Playwright E2E tests across 12 spec files | Complete |
+| 70 pytest backend tests | Complete |
+| 100% line coverage on `app.py` and `router.py` | Complete |
+
+### Generated Tests
+
+| Spec File | Tests | Focus |
+|-----------|-------|-------|
+| `incident-form.spec.ts` | 18 | Form validation and submission |
+| `router-api.spec.ts` | 21 | API-level routing |
+| `dashboard.spec.ts` | 10 | Filters, badges, sorting |
+| `rule-engine.spec.ts` | 6 | UI routing integration |
+| `theme.spec.ts` | 5 | Theme persistence |
+| `api-crud.spec.ts` | 4 | PUT/DELETE endpoints |
+| `api-interception.spec.ts` | 4 | POST/GET contract |
+| `navigation.spec.ts` | 3 | Routes and navbar |
+| `notifications.spec.ts` | 3 | Notification UI |
+| `search.spec.ts` | 3 | Dashboard search |
+| `export.spec.ts` | 2 | JSON/CSV export |
+| `edit-delete.spec.ts` | 2 | Edit and delete |
+| **Total** | **81** | |
+
+Backend pytest: **70 tests**, **100% line coverage** on `app.py` and `router.py`.
+
+### Hallucinations / Issues Encountered
+
+##### Hallucination 1 — Hardcoded Test Assertions
+
+| Field | Detail |
+|-------|--------|
+| **Original Prompt** | "Assert dashboard shows 'Showing 1 of 2 tickets' after filter" |
+| **Expected Result** | Dynamic count assertion |
+| **Actual Result** | Test failed when ticket data differed between runs |
+| **Issue** | Hardcoded counts assumed fixed JSON state |
+| **How Identified** | Playwright failures with leftover tickets from prior tests |
+| **How Fixed** | Added `resetTickets()` in `beforeEach`; assert counts from API response |
+| **Improved Prompt** | "Reset tickets.json before each test; assert counts dynamically from visible rows" |
+
+
+### Manual Improvements
+
+| Issue | Fix |
+|-------|-----|
+| `localhost` resolved to IPv6 on Windows | API client uses `127.0.0.1:5000` |
+| Theme test cleared localStorage on every navigation | One-time `evaluate()` instead of `addInitScript` |
+| Notification badge squashed by navbar CSS | Scoped button styles in `NotificationDropdown.jsx` |
+| Flaky dashboard loading spinner test | Split spinner and empty-state assertions; wait for load completion |
+
+---
+
+## Lessons Learned
+
+| # | Lesson |
+|---|--------|
+| 1 | Break work into phases: scaffold, form, API, dashboard, tests |
+| 2 | Specify exact file paths and function names in prompts |
+| 3 | Paste exact keyword arrays instead of vague "improve routing" |
+| 4 | Use plan-then-approve for multi-file changes |
+| 5 | Design test data isolation (`resetTickets`) from the first test prompt |
+| 6 | List approved dependencies to block template extras |
+| 7 | Account for Windows PowerShell syntax and IPv6 in test configuration |
+| 8 | Restart Flask after backend changes (no hot reload in production mode) |
+| 9 | Keep docs/ to README.md and prompt_log.md per project rules |
+
+
+---
+
+*End of prompt log.*

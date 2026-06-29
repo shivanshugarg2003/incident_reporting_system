@@ -3,7 +3,7 @@
 import json
 import os
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
@@ -55,6 +55,22 @@ def save_tickets(tickets: list) -> None:
         json.dump({"tickets": tickets}, file, indent=2)
 
 
+def _find_ticket_index(tickets: list, ticket_id: str) -> int | None:
+    """Find the index of a ticket by its ID.
+
+    Args:
+        tickets: List of ticket dictionaries.
+        ticket_id: UUID string of the ticket to locate.
+
+    Returns:
+        Index of the ticket or None if not found.
+    """
+    for index, ticket in enumerate(tickets):
+        if ticket.get("id") == ticket_id:
+            return index
+    return None
+
+
 @app.route("/tickets", methods=["POST"])
 def create_ticket() -> tuple:
     """Create a new incident ticket from the request JSON body.
@@ -70,15 +86,18 @@ def create_ticket() -> tuple:
         if value is None or (isinstance(value, str) and not value.strip()):
             return jsonify({"error": f"Missing required field: {field}"}), 400
 
+    description = body.get("description", "").strip()
+
     ticket = {
         "id": str(uuid.uuid4()),
-        "reporter_name": body["reporter_name"],
+        "reporter_name": body["reporter_name"].strip(),
         "source_type": body["source_type"],
         "incident_date": body["incident_date"],
-        "description": body["description"],
+        "description": description,
         "attachment_filename": body.get("attachment_filename") or None,
-        "priority": assign_priority(body.get("description")),
-        "created_at": datetime.utcnow().isoformat() + "Z",
+        "priority": assign_priority(description),
+        "status": "Open",
+        "created_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
     }
 
     tickets = load_tickets()
@@ -107,6 +126,9 @@ def get_tickets() -> tuple:
         if ticket.get("priority") != priority:
             ticket["priority"] = priority
             priority_updated = True
+        if "status" not in ticket:
+            ticket["status"] = "Open"
+            priority_updated = True
 
     if priority_updated:
         save_tickets(tickets)
@@ -117,6 +139,71 @@ def get_tickets() -> tuple:
         reverse=True,
     )
     return jsonify({"tickets": sorted_tickets}), 200
+
+
+@app.route("/tickets/<ticket_id>", methods=["PUT"])
+def update_ticket(ticket_id: str) -> tuple:
+    """Update an existing ticket by ID.
+
+    Args:
+        ticket_id: UUID of the ticket to update.
+
+    Returns:
+        JSON response with the updated ticket and HTTP 200, or an error response.
+    """
+    body = request.get_json(silent=True) or {}
+    tickets = load_tickets()
+    index = _find_ticket_index(tickets, ticket_id)
+
+    if index is None:
+        return jsonify({"error": "Ticket not found"}), 404
+
+    ticket = tickets[index]
+    updatable_fields = [
+        "reporter_name",
+        "source_type",
+        "incident_date",
+        "description",
+        "attachment_filename",
+        "status",
+    ]
+
+    for field in updatable_fields:
+        if field in body:
+            value = body[field]
+            if isinstance(value, str):
+                value = value.strip()
+            ticket[field] = value
+
+    if "description" in body:
+        ticket["priority"] = assign_priority(ticket.get("description"))
+
+    tickets[index] = ticket
+    save_tickets(tickets)
+
+    return jsonify(ticket), 200
+
+
+@app.route("/tickets/<ticket_id>", methods=["DELETE"])
+def delete_ticket(ticket_id: str) -> tuple:
+    """Delete a ticket by ID.
+
+    Args:
+        ticket_id: UUID of the ticket to delete.
+
+    Returns:
+        JSON confirmation and HTTP 200, or an error response.
+    """
+    tickets = load_tickets()
+    index = _find_ticket_index(tickets, ticket_id)
+
+    if index is None:
+        return jsonify({"error": "Ticket not found"}), 404
+
+    removed = tickets.pop(index)
+    save_tickets(tickets)
+
+    return jsonify({"message": "Ticket deleted", "id": removed.get("id")}), 200
 
 
 @app.errorhandler(400)

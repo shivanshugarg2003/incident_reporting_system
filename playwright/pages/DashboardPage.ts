@@ -25,11 +25,23 @@ export class DashboardPage extends BasePage {
   }
 
   get emptyState() {
-    return this.page.getByText('No tickets found.');
+    return this.page.getByTestId('empty-state');
   }
 
   get ticketTable() {
-    return this.page.getByRole('table');
+    return this.page.getByTestId('ticket-table');
+  }
+
+  get searchInput() {
+    return this.page.getByTestId('ticket-search');
+  }
+
+  get exportJsonButton() {
+    return this.page.getByTestId('export-json');
+  }
+
+  get exportCsvButton() {
+    return this.page.getByTestId('export-csv');
   }
 
   get dataRows() {
@@ -37,7 +49,7 @@ export class DashboardPage extends BasePage {
   }
 
   filterButton(name: 'All' | 'Critical' | 'Low') {
-    return this.page.getByRole('button', { name });
+    return this.page.getByTestId(`filter-${name.toLowerCase()}`);
   }
 
   ticketCountLine(showing: number, total: number) {
@@ -54,8 +66,16 @@ export class DashboardPage extends BasePage {
 
   priorityBadgeInRow(reporterName: string, priority: 'Critical' | 'Low') {
     return this.rowByReporterName(reporterName)
-      .getByText(priority, { exact: true })
+      .getByTestId(`priority-badge-${priority}`)
       .first();
+  }
+
+  editButtonForReporter(name: string) {
+    return this.rowByReporterName(name).getByRole('button', { name: new RegExp(`Edit ticket from ${name}`) });
+  }
+
+  deleteButtonForReporter(name: string) {
+    return this.rowByReporterName(name).getByRole('button', { name: new RegExp(`Delete ticket from ${name}`) });
   }
 
   async waitForTable(): Promise<void> {

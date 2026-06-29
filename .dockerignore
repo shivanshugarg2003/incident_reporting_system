@@ -4,6 +4,9 @@ playwright/node_modules
 __pycache__
 *.pyc
 *.pyo
+.pytest_cache
+.coverage
+htmlcov
 .env
 .git
 .gitignore
@@ -12,3 +15,5 @@ frontend/dist
 playwright/playwright-report
 playwright/test-results
 playwright/blob-report
+.cursor
+docs/screenshots

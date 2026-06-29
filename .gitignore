@@ -1,9 +1,51 @@
+# Dependencies
 node_modules/
+frontend/node_modules/
+playwright/node_modules/
+
+# Python
 __pycache__/
-.env
-dist/
+*.py[cod]
+*.pyo
 .venv/
-*.pyc
+venv/
+.pytest_cache/
+backend/.pytest_cache/
+backend/pytest-cache-files-*/
+*.egg-info/
+.coverage
+htmlcov/
+backend/.coverage
+coverage.xml
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+frontend/dist/
+build/
+
+# IDE and OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Playwright artifacts
 playwright/playwright-report/
 playwright/test-results/
 playwright/blob-report/
+playwright/.cache/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test and coverage caches (backend)
+backend/htmlcov/

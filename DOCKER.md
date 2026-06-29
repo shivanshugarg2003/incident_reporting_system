@@ -83,10 +83,12 @@ Enable **GitLab Runner** with Docker executor (or use GitLab shared runners with
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DATA_DIR` | `../data` (local) / `/app/data` (Docker) | Directory containing `tickets.json` |
+| `DATA_DIR` | `/app/data` (Docker) / `../data` (local dev) | Directory containing `tickets.json` |
 | `ALLOWED_ORIGIN` | `*` | CORS allowed origin |
-| `FLASK_ENV` | — | Set to `production` in `docker-compose.yml` |
+| `FLASK_ENV` | `production` in `docker-compose.yml` | Enables production data path |
 | `VITE_API_URL` | `""` | Optional API base URL for Vite dev builds |
+
+> **Note:** `docker-compose.yml` sets `DATA_DIR=/app/data` explicitly. The production Dockerfile also declares `FLASK_ENV=production` and creates `/app/data`.
 
 ## Local Development (Non-Docker)
 

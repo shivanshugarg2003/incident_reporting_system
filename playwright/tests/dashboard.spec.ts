@@ -18,9 +18,11 @@ test.describe('Ticket Dashboard', () => {
       await route.continue();
     });
 
-    await dashboardPage.goto();
+    const gotoPromise = dashboardPage.goto();
     await expect(dashboardPage.loadingSpinner).toBeVisible();
-    await expect(dashboardPage.emptyState).toBeVisible();
+    await gotoPromise;
+    await dashboardPage.waitForLoaded();
+    await expect(dashboardPage.loadingSpinner).toBeHidden();
   });
 
   test('displays submitted ticket with correct details', async ({
@@ -80,8 +82,8 @@ test.describe('Ticket Dashboard', () => {
 
     const badge = dashboardPage.priorityBadgeInRow('Low Reporter', 'Low');
     await expect(badge).toBeVisible();
-    await expect(badge).toHaveClass(/bg-gray-100/);
-    await expect(badge).toHaveClass(/text-gray-700/);
+    await expect(badge).toHaveClass(/bg-green-100/);
+    await expect(badge).toHaveClass(/text-green-800/);
   });
 
   test('applies red row background for Critical tickets', async ({
