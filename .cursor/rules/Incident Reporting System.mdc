@@ -1,3 +1,44 @@
 ---
+description: Incident Reporting System — plan-then-approve workflow, constraints, dependencies, and project structure
 alwaysApply: true
 ---
+ 
+# CURSOR COMPOSER RULES — Incident Reporting System
+ 
+## WORKFLOW: Plan-Then-Approve (MANDATORY)
+ 
+Before generating ANY code, you MUST:
+ 
+1. Output a numbered PLAN listing all files to be created or modified
+2. List the exact functions / components you intend to write
+3. STOP and wait for explicit approval ("approved", "proceed", or "yes")
+4. Only after approval: generate the code
+ 
+## CONSTRAINTS
+ 
+- Never create files outside the defined project structure
+- Never install packages not in the approved dependency list
+- Never use class components — functional components with hooks only
+- Never use inline styles — Tailwind CSS classes only
+- Always add JSDoc comments to every exported function
+- Python files must include type hints and docstrings
+ 
+## APPROVED DEPENDENCIES
+ 
+**Frontend:** react, react-dom, vite, @vitejs/plugin-react, tailwindcss, postcss, autoprefixer, axios, uuid, react-router-dom
+ 
+**Backend:** flask, flask-cors, python-dotenv
+ 
+## PROJECT STRUCTURE (SACRED — do not deviate)
+ 
+```
+/frontend/src/components/
+/frontend/src/pages/
+/backend/router.py
+/backend/app.py
+/data/tickets.json
+/docs/README.md
+/docs/prompt_log.md
+```
+ 
+ 
