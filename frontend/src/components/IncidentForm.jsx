@@ -100,6 +100,8 @@ function IncidentForm() {
       setCharCount(value.length)
     }
 
+    setErrors((prev) => ({ ...prev, [field]: '' }))
+
     if (field === 'sourceType') {
       setFormData((prev) => ({
         ...prev,
@@ -132,13 +134,13 @@ function IncidentForm() {
     return !Object.values(newErrors).some((message) => message !== '')
   }
 
-  const isSubmitDisabled =
-    isSubmitting ||
-    !formData.reporterName ||
-    !formData.sourceType ||
-    !formData.incidentDate ||
-    !formData.description ||
-    Object.values(errors).some((message) => message !== '')
+  const isFormValid =
+    validateReporterName(formData.reporterName) === '' &&
+    validateSourceType(formData.sourceType) === '' &&
+    validateIncidentDate(formData.incidentDate) === '' &&
+    validateDescription(formData.description) === ''
+
+  const isSubmitDisabled = isSubmitting || !isFormValid
 
   const fileConfig = formData.sourceType
     ? FILE_UPLOAD_CONFIG[formData.sourceType]

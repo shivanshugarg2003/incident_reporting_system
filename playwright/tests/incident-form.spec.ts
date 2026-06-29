@@ -14,7 +14,10 @@ test.describe('Incident Form', () => {
 
   test('all required fields are visible', async ({ submitPage }) => {
     await expect(submitPage.reporterNameInput).toBeVisible();
-    await expect(submitPage.sourceTypeSelect).toBeVisible();
+    await expect(submitPage.sourceTypeRadiogroup).toBeVisible();
+    await expect(submitPage.sourceTypeRadio('Email')).toBeVisible();
+    await expect(submitPage.sourceTypeRadio('Portal')).toBeVisible();
+    await expect(submitPage.sourceTypeRadio('PDF Upload')).toBeVisible();
     await expect(submitPage.incidentDateInput).toBeVisible();
     await expect(submitPage.descriptionTextarea).toBeVisible();
     await expect(submitPage.submitButton).toBeVisible();
@@ -49,7 +52,6 @@ test.describe('Incident Form', () => {
   test('shows validation error when source type is not selected on blur', async ({
     submitPage,
   }) => {
-    await submitPage.sourceTypeSelect.focus();
     await submitPage.blurSourceType();
     await expect(
       submitPage.fieldError('Please select a source type'),
@@ -79,7 +81,7 @@ test.describe('Incident Form', () => {
   test('shows conditional file upload after selecting source type', async ({
     submitPage,
   }) => {
-    await submitPage.sourceTypeSelect.selectOption('Email');
+    await submitPage.selectSourceType('Email');
     await expect(submitPage.fileUploadLabel('Email')).toBeVisible();
     await expect(
       submitPage.page.getByText('Accepted formats: .eml .msg .pdf'),
@@ -123,7 +125,9 @@ test.describe('Incident Form', () => {
 
     await expect(submitPage.successBanner).toBeVisible();
     await expect(submitPage.reporterNameInput).toHaveValue('');
-    await expect(submitPage.sourceTypeSelect).toHaveValue('');
+    await expect(submitPage.sourceTypeRadio('Email')).not.toBeChecked();
+    await expect(submitPage.sourceTypeRadio('Portal')).not.toBeChecked();
+    await expect(submitPage.sourceTypeRadio('PDF Upload')).not.toBeChecked();
     await expect(submitPage.incidentDateInput).toHaveValue('');
     await expect(submitPage.descriptionTextarea).toHaveValue('');
     await expect(submitPage.characterCounter).toHaveText('0 / 2000');

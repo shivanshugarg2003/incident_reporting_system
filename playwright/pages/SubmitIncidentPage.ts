@@ -14,12 +14,12 @@ export class SubmitIncidentPage extends BasePage {
   }
 
   get pageTitle() {
-    return this.page.getByRole('heading', { name: 'Report an Incident' });
+    return this.page.getByRole('heading', { name: 'Incident Report Form' });
   }
 
   get pageSubtitle() {
     return this.page.getByText(
-      'Fill in the details below to submit a new incident ticket',
+      'To report an incident please fill out the form below to submit your request.',
     );
   }
 
@@ -27,8 +27,12 @@ export class SubmitIncidentPage extends BasePage {
     return this.page.getByLabel('Reporter Name');
   }
 
-  get sourceTypeSelect() {
-    return this.page.getByLabel('Source Type');
+  get sourceTypeRadiogroup() {
+    return this.page.getByRole('radiogroup', { name: 'Source Type' });
+  }
+
+  sourceTypeRadio(sourceType: TicketFormData['sourceType']) {
+    return this.page.getByRole('radio', { name: sourceType, exact: true });
   }
 
   get incidentDateInput() {
@@ -40,7 +44,7 @@ export class SubmitIncidentPage extends BasePage {
   }
 
   get submitButton() {
-    return this.page.getByRole('button', { name: 'Submit Report' });
+    return this.page.getByRole('button', { name: 'Submit', exact: true });
   }
 
   get submittingButton() {
@@ -72,9 +76,13 @@ export class SubmitIncidentPage extends BasePage {
     return this.page.getByText(message);
   }
 
+  async selectSourceType(sourceType: TicketFormData['sourceType']): Promise<void> {
+    await this.sourceTypeRadio(sourceType).check();
+  }
+
   async fillForm(data: TicketFormData): Promise<void> {
     await this.reporterNameInput.fill(data.reporterName);
-    await this.sourceTypeSelect.selectOption(data.sourceType);
+    await this.selectSourceType(data.sourceType);
     await this.incidentDateInput.fill(data.incidentDate);
     await this.descriptionTextarea.fill(data.description);
   }
@@ -88,7 +96,8 @@ export class SubmitIncidentPage extends BasePage {
   }
 
   async blurSourceType(): Promise<void> {
-    await this.sourceTypeSelect.blur();
+    await this.sourceTypeRadio('Email').focus();
+    await this.sourceTypeRadio('Email').blur();
   }
 
   async blurIncidentDate(): Promise<void> {

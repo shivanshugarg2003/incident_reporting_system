@@ -19,6 +19,8 @@ npx playwright install chromium
 
 ## Running Tests
 
+**Important:** After changing `backend/router.py`, restart the app (`npm run dev`) before running tests or testing in the browser. The Flask process loads routing rules at startup.
+
 From the **project root**:
 
 ```bash
@@ -54,9 +56,9 @@ playwright/
 
 | File | Coverage |
 |------|----------|
-| `navigation.spec.ts` | Routes, navbar links, active state |
-| `incident-form.spec.ts` | Form load, validation, submit, reset |
-| `rule-engine.spec.ts` | Critical/Low priority assignment |
+| `navigation.spec.ts` | Routes, navbar links, active state, IDS React branding |
+| `incident-form.spec.ts` | Form load, validation, radio source type, submit, reset |
+| `rule-engine.spec.ts` | All 8 Critical keyword patterns + Low assignment |
 | `dashboard.spec.ts` | Table, filters, sorting, badges, empty state |
 | `api-interception.spec.ts` | Request payload, response status/body |
 
@@ -79,6 +81,7 @@ Each test resets `data/tickets.json` to `{ "tickets": [] }` in a `beforeEach` ho
 No `data-testid` attributes exist in the app. Tests use:
 
 - `getByLabel()` for form fields
+- `getByRole('radio')` and `getByRole('radiogroup')` for source type selection
 - `getByRole()` for buttons, links, table, banners
 - `getByText()` for messages and counters
 

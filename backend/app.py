@@ -77,7 +77,7 @@ def create_ticket() -> tuple:
         "incident_date": body["incident_date"],
         "description": body["description"],
         "attachment_filename": body.get("attachment_filename") or None,
-        "priority": assign_priority(body["description"]),
+        "priority": assign_priority(body.get("description")),
         "created_at": datetime.utcnow().isoformat() + "Z",
     }
 
@@ -92,10 +92,25 @@ def create_ticket() -> tuple:
 def get_tickets() -> tuple:
     """Return all tickets sorted by incident date descending.
 
+    Recomputes priority from each ticket description so dashboard filters
+    always reflect the current routing rules.
+
     Returns:
         JSON response with tickets array and HTTP 200.
     """
     tickets = load_tickets()
+    priority_updated = False
+
+    for ticket in tickets:
+        description = ticket.get("description", "")
+        priority = assign_priority(description)
+        if ticket.get("priority") != priority:
+            ticket["priority"] = priority
+            priority_updated = True
+
+    if priority_updated:
+        save_tickets(tickets)
+
     sorted_tickets = sorted(
         tickets,
         key=lambda ticket: ticket.get("incident_date", ""),

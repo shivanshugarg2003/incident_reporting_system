@@ -42,7 +42,8 @@ function TicketDashboard() {
 
   const filteredTickets = tickets.filter((ticket) => {
     if (filter === 'All') return true
-    return ticket.priority === filter
+    const priority = (ticket.priority || '').trim()
+    return priority === filter
   })
 
   const truncateDescription = (text) => {

@@ -64,7 +64,7 @@ test.describe('Ticket Dashboard', () => {
     await expect(badge).toHaveClass(/text-red-800/);
   });
 
-  test('shows Low priority badge with slate styling', async ({
+  test('shows Low priority badge with gray styling', async ({
     request,
     dashboardPage,
   }) => {
@@ -80,8 +80,8 @@ test.describe('Ticket Dashboard', () => {
 
     const badge = dashboardPage.priorityBadgeInRow('Low Reporter', 'Low');
     await expect(badge).toBeVisible();
-    await expect(badge).toHaveClass(/bg-slate-100/);
-    await expect(badge).toHaveClass(/text-slate-700/);
+    await expect(badge).toHaveClass(/bg-gray-100/);
+    await expect(badge).toHaveClass(/text-gray-700/);
   });
 
   test('applies red row background for Critical tickets', async ({
@@ -211,9 +211,15 @@ test.describe('Ticket Dashboard', () => {
   });
 
   test('shows empty state when no tickets exist', async ({
+    request,
     dashboardPage,
   }) => {
+    await resetTickets();
+    const { tickets } = await getTickets(request);
+    expect(tickets).toHaveLength(0);
+
     await dashboardPage.goto();
+    await dashboardPage.waitForLoaded();
     await expect(dashboardPage.emptyState).toBeVisible();
     await expect(dashboardPage.ticketTable).toHaveCount(0);
   });

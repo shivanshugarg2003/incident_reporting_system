@@ -5,7 +5,7 @@ test.describe('Navigation', () => {
     await page.goto('/');
     await expect(page).toHaveURL(/\/submit$/);
     await expect(
-      page.getByRole('heading', { name: 'Report an Incident' }),
+      page.getByRole('heading', { name: 'Incident Report Form' }),
     ).toBeVisible();
   });
 
@@ -17,6 +17,7 @@ test.describe('Navigation', () => {
   }) => {
     await submitPage.goto();
     await expect(submitPage.pageTitle).toBeVisible();
+    await expect(navbar.appTitle).toBeVisible();
 
     await navbar.goToDashboard();
     await expect(page).toHaveURL(/\/dashboard$/);
@@ -32,7 +33,7 @@ test.describe('Navigation', () => {
     navbar,
   }) => {
     await submitPage.goto();
-    await expect(navbar.submitIncidentLink).toHaveClass(/text-blue-600/);
-    await expect(navbar.dashboardLink).not.toHaveClass(/text-blue-600/);
+    await expect(navbar.submitIncidentLink).toHaveClass(/text-white/);
+    await expect(navbar.dashboardLink).toHaveClass(/text-gray-300/);
   });
 });

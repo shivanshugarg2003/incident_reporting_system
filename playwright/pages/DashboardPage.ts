@@ -62,6 +62,10 @@ export class DashboardPage extends BasePage {
     await this.ticketTable.waitFor({ state: 'visible' });
   }
 
+  async waitForLoaded(): Promise<void> {
+    await this.loadingSpinner.waitFor({ state: 'hidden' });
+  }
+
   async selectFilter(filter: 'All' | 'Critical' | 'Low'): Promise<void> {
     await this.filterButton(filter).click();
   }

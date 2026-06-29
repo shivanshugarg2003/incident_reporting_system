@@ -113,16 +113,32 @@ npm run dev
 
 The following keywords in a ticket description trigger **Critical** priority. All matching is case-insensitive.
 
-1. system down
-2. security down
-3. error 500 (also matches error500)
-4. server crash
+1. system down (also: systems down, system is down, system-offline, sytem down typo)
+2. security down (also: security is down, securty down typo)
+3. error 500 (also: error500, error: 500, 500 error, http 500)
+4. server crash (also: server crashed)
 5. data breach
-6. outage
-7. critical failure
-8. unauthorized access (also matches unauthorised access)
+6. outage / outages
+7. critical failure (also: crictical failure typo)
+8. unauthorized access (also: unauthorised access)
+9. critical issues / crictical issues / critical issue in system
+10. critical + system in same description (e.g. "crictical issues in system")
 
 If none of the patterns match, the ticket is assigned **Low** priority.
+
+### Acceptance test cases
+
+| Description | Expected priority |
+|-------------|-------------------|
+| The system down affected production | Critical |
+| security down on firewall today | Critical |
+| Users see error 500 on login page | Critical |
+| error500 on checkout | Critical |
+| crictical issues in system | Critical |
+| Minor UI glitch on settings page | Low |
+| random text with no keywords | Low |
+
+Matching is case-insensitive (`SYSTEM DOWN` also returns Critical).
 
 ## Project Structure
 

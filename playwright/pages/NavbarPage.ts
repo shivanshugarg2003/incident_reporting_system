@@ -6,6 +6,10 @@ export class NavbarPage extends BasePage {
     super(page);
   }
 
+  get appTitle() {
+    return this.page.getByText('IDS React', { exact: true });
+  }
+
   get submitIncidentLink() {
     return this.page.getByRole('link', { name: 'Submit Incident' });
   }
