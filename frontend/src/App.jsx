@@ -11,7 +11,7 @@ import DashboardPage from './pages/DashboardPage'
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-[#F0F2F5] pt-14">
         <Navbar />
         <Routes>
           <Route path="/" element={<Navigate to="/submit" replace />} />
